@@ -1,0 +1,474 @@
+%% Requires compilation with XeLaTeX or LuaLaTeX
+\documentclass[10pt,xcolor={table,dvipsnames},t,unknownkeysallowed]{beamer}
+\usepackage{amsmath,amssymb,latexsym}
+
+\usetheme{CLT}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{biblatex}
+
+\addbibresource{refs.bib}
+
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\cone}[1]{\mathcal{#1}}
+\newcommand{\bfemph}[1]{\textbf{\alert{#1}}}
+\newcommand{\intr}{\text{int}}
+
+
+\title{\Large Benson-Type Algorithm for \\ Vector Optimization Problems}
+\subtitle{Department Seminar}
+\author{Mohammed Alshahrani}
+\institute{Department of Mathematics | KFUPM}
+\date{April 6, 2022}
+
+\begin{document}
+
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+\section{Introduction}
+
+\begin{frame}{Introduction}
+A vector optimization problem of one of the form
+\begin{equation}\label{vop} \tag{VOP}
+  \begin{array}{ll}
+    "\min"& f(x)\\
+    \text{subject to}& x\in \Omega
+	   \end{array}
+\end{equation}
+where  $f:\mathbb{R}^n\to \R^m$ is a vector-valued function and $\Omega$ is a subset of $ \R^n$, called the feasible set. 
+\newline
+The Euclidean spaces $\R^n$ and $\R^m$ are referred to as the \alert{\textbf{decision}} space and the \alert{\textbf{objective}} space respectively. 
+\begin{block}{Notation}
+    For a set $A \in \R^m$ , we denote by $\intr{A}, \text{cl} A, \text{bd} A, \text{conv} A, \text{cone} A$, respectively the interior, closure, boundary, convex hull and the conic hull of $A$.
+\end{block}
+\end{frame}
+
+
+\begin{frame}{}
+    In this talk, we are interested in the following convex version of \eqref{vop}
+    \begin{equation}\label{cvop} \tag{c-VOP}
+      \begin{array}{ll}
+        \min_{\cone{C}}& f(x)\\
+        \text{subject to}& x\in X, \;\; \\
+        & g(x)\leq_{\cone{D}} 0
+    	   \end{array}
+    \end{equation}
+      \begin{itemize}[<+- | alert@+>]
+    \item[]
+    \item $\cone{C}\subseteq \R^m, \cone{D}\subseteq \R^l$ are non-trivial pointed convex ordering cones with nonempty
+interior.
+    \item $X \subseteq \R^n$ is a convex set, 
+    \item $f : X \to \R^m$ is
+C-convex, 
+    \item $g : X \to \R^l$ is D-convex.
+    \item Note: $\displaystyle \Omega = \left\{x\in X \;|\; -g(x)\in \cone{D} \right\}$ is convex.
+    \item We assume that $\Omega\not=\emptyset$, ie \eqref{cvop} is feasible.
+    
+   \end{itemize}
+\end{frame}
+
+\begin{frame}{}
+    We define the \bfemph{upper image} of \eqref{cvop} as 
+    \begin{equation}\label{upper_img}
+            \cone{V} = \text{cl}\left(f(\Omega)+\cone{C}\right)
+    \end{equation}
+    
+    which is closed and convex.
+    \newline
+    \eqref{cvop} is said to be \bfemph{bounded} if $\cone{V}\subseteq \{y\}+ \cone{C}$ for some $y\in \R^m$.
+    \begin{definition}[Hamel and L{\"o}hne \cite{aHamelLohne2014}]
+        A point $\Bar{x} \in \Omega$ is said to be a \bfemph{[\textcolor{red}{weak}] minimizer} for \eqref{cvop} if $f(\bar{x})$ is \bfemph{[\textcolor{red}{weak}] $\cone{C}$-minimal} of $\cone{V}$; that is
+        \[
+        \left[\textcolor{red}{\left(\{f(\Bar{x})\}-\intr{\cone{C}}\right)\cap f(\Omega) = \emptyset}\right] \left(\{f(\Bar{x})\}-\cone{C}\setminus \{0\}\right)\cap f(\Omega) = \emptyset
+        \]
+        A nonempty set $\Bar{\Omega} \subseteq \Omega $ is called an \bfemph{infimizer} of \eqref{cvop} if 
+        \[
+        \text{cl conv} (f(\Bar{\Omega}) + \cone{C}) = \cone{V}.
+        \]
+        An infimizer $\Bar{\Omega}$ of \eqref{cvop} is called \bfemph{(weak)} solution to \eqref{cvop} if it consists of only (weak) minimizers.
+    \end{definition}
+    This is based on the complete lattice 
+    \[
+    G(\R^n ,\cone{C}) = \left\{A \subseteq \R^m \;|\; A = \text{cl conv} (A +\cone{C})\right\}
+    \]
+    with respect to the ordering $\supseteq$.
+\end{frame}
+
+\begin{frame}{}
+    For the rest of this presentation, we fix
+    \[
+    c\in \intr{C}
+    \]
+    \begin{definition}[L{\"o}hne et. al \cite{aLohneRudloffUlus2014}]
+        For bounded \eqref{cvop}, a nonempty finite set $\Bar{\Omega}\subseteq \Omega$ is called a \bfemph{finite $\epsilon$-infimizer} of \eqref{cvop} if
+        \[
+        \text{conv }f(\Bar{\Omega})+\cone{C}-\epsilon\{c\}\supseteq \cone{V}.
+        \]
+        A finite $\epsilon$-infimizer of \eqref{cvop} is called a \bfemph{finite (week) $\epsilon$-solution} to \eqref{cvop} if it consists of only (week) minimizers.
+    \end{definition}
+    If $\Bar{\Omega}$ is a finite $\epsilon$-solution, we have 
+    \begin{itemize}
+        \item an \textbf{\alert{outer approximation}} of the upper image \eqref{upper_img},
+        \begin{equation}\label{outer_approx}
+            \text{conv } f(\Bar{\Omega}) + \cone{C} -\epsilon\{c\}
+        \end{equation}
+        \item an \textbf{\alert{inner approximation}} of the upper image \eqref{upper_img},
+        \begin{equation}\label{inner_approx}
+            \text{conv } f(\Bar{\Omega}) + \cone{C} 
+        \end{equation}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Weighted Sum Scalarization}
+    For a $w\in \R^m$, the following optimization problem
+     \begin{equation}\label{wsp-cvop} \tag{ws-VOP$_w$-P}
+      \begin{array}{ll}
+        \min_{\cone{C}}& w^Tf(x)\\
+        \text{subject to}& x\in X, \;\; \\
+        & g(x)\leq_{\cone{D}} 0
+    	   \end{array}
+    \end{equation}
+    is the \textbf{\alert{weighted sum scalarization }} of \eqref{cvop}. Note that \eqref{wsp-cvop} is convex. 
+\end{frame}
+\begin{frame}{}
+    The \textbf{\alert{dual program}} is defined as
+    \begin{equation}\label{wsd-cvop}\tag{ws-VOP$_w$-D}
+        \max \phi_w(u), \quad u\in \R^l_+
+    \end{equation}
+    where 
+    \[
+    \phi_w(u) = \inf_{x\in \Omega} L_w(x,u).
+    \] 
+    Here $L_w:\Omega\times\R^l \to \R$ is the \textbf{\alert{Lagrangian}}
+    \[
+    L_w(x,u) = w^Tf(x)+u^Tg(x).
+    \]
+    
+    \begin{proposition}
+    For any $w\in\cone{C}^+\setminus\{0\}$, an optimal solution $\bar{x}^w$ of \eqref{wsp-cvop} is a week minimizer of \eqref{cvop}, where $\cone{C}^+$ is the \textbf{\alert{(positive) dual cone}} of $\cone{C}$ defined as 
+    \[    
+        \cone{C}^+ = \left\{w \in \R^m\; | \;  w^Ty \geq 0, \text{for all } x\in \cone{C}\right\}
+    \]
+    \end{proposition}
+    
+\end{frame}
+
+\begin{frame}{Geometric Dual Problem}
+    Let's first choose and fix $m-1$ vectors in $\R^m$
+    \[
+    c^1,c^2,\cdots,c^{m-1} \in \R^m
+    \]
+    such that $c^1,c^2,\cdots,c^{m-1}, c$ are linearly independent. For $t\in\R^m$, we define $w:\R^m\to\R^m$ as
+    \[
+     w(t) = [(t_1,\cdots,t_{m-1},1)T^{-1}]^T, \quad \text{where } T = [c^1,c^2,\cdots,c^{m-1}, c].
+    \]
+    Note that for any $w,t\in \R^m$, we have
+    \begin{equation}\label{useful-statement}
+        w(t) = w, t_m=1 \quad \Longleftrightarrow  \quad  t=T^tw, c^Tw=1.
+    \end{equation}
+\end{frame}
+
+\begin{frame}{}
+Now, define the function $\Tilde{D}:\R^m\to\R^m$ as
+    \[
+    \Tilde{D}(t) = \left[t_1,\cdots,t_{m-1}, \inf_{x\in\Omega}w(t)^T f(x)\right]^T.
+    \]
+    Then the \textbf{\alert{geometric dual problem}} of \eqref{cvop} is the program
+    \begin{equation}\label{dual-cvop} \tag{Dual-VOP}
+      \begin{array}{ll}
+        \max_{\cone{K}}& \Tilde{D}(t)\\
+        \text{subject to}& w(t)\in \cone{C}^+,
+      \end{array}
+    \end{equation}
+ where $\cone{K}$ is the ordering cone 
+ \[
+ \cone{K} = \left\{y\in \R^m\;|\; y_1=y_2=\cdots=y_{m-1}=0, y_m\geq 0\right\} = \R_+e^m.
+ \]
+ 
+\end{frame}
+
+\begin{frame}{}
+The \textbf{\alert{lower image }} for \eqref{dual-cvop} is defined as
+ \[
+ \cone{W} = \Tilde{D}(\cone{M}) - \cone{K},
+ \]
+ where $\cone{M}$ is the feasible set of \eqref{dual-cvop}. Note that $\cone{W}$ is closed and convex and can be written as
+     \begin{equation}\label{lower_img}
+     \cone{W} = \left\{t\in\R^m\;|\; w(t)\in \cone{C}^+, t_m\leq \inf_{x\in\Omega}w(t)^T f(x) \right\}
+     \end{equation}
+        \begin{proposition}
+    Let $t\in\cone{M}$ and $w=w(t)$. If \eqref{wsd-cvop} has a finite optimal value $y^w\in \R$, then $\Tilde{D}(t)$ is $\cone{K}$-maximal of $\cone{W}$; that is 
+    \[
+    \left(\Tilde{D}(t)+\cone{K}\setminus\{0\}\right)\cap \cone{W} =\emptyset,
+    \] 
+    and $\Tilde{D}(t)\in \text{bd }\cone{W}$.
+    \end{proposition}
+    {\small
+     \begin{remark}
+    Heyde in \cite{aHeyde2013},  proved that there is a one-to-one correspondence between the set of $\cone{K}$-maximal exposed faces of $\cone{W}$, and the set of all weakly $\cone{C}$-minimal exposed faces of $\cone{V}$ which puts the problems \eqref{cvop} and \eqref{dual-cvop} in duality.
+    \end{remark}}
+\end{frame}
+
+\begin{frame}{Primal Benson-Type Algorithm}
+    We now present an extension of Benson Outer Approximation Algorithm \cite{aEhrgottShaoSch2011}. For this we need to introduce the geometric concepts of a \textbf{\alert{$V$-representation}} and  an \textbf{\alert{$H$-representation}} of a \textbf{\alert{polyhedral convex set}} $A\subseteq\R^m$.
+    \begin{definition}[Polyhedral Set]
+        A set $A\subseteq\R^m$ is called a \textbf{\alert{polyhedral convex set}} if it is the intersection of finitely many half spaces, that is
+        \begin{equation}\label{h-rep}
+            A=\bigcap_{i=1}^r\left\{y\in \R^m\;|\; (w^i)^Ty\geq \gamma_i\right\}
+        \end{equation}
+        for some non-negative integer $r$, and $w^i\in\R^m\setminus\{0\}, \gamma_i\in \R ;\;\; 1\leq i\leq r$. This representation is knows as \textbf{\alert{$H$-representation}} of $A$.
+    \end{definition}
+\end{frame}
+
+\begin{frame}{}
+    \begin{remark}
+        Every non-empty polyhedral convex set $A$ can be written as
+        \begin{equation}\label{v-rep}
+            A = \text{conv }\{x^1,\cdots,x^q\} + \text{cone }\{k^1,\cdots,k^s\},
+        \end{equation}
+        where $q$ is positive integer, $s$ is a non-negative integer, $x^i\in\R^m$ for every $1\leq i\leq q$ and $k^j\in\R^m\setminus\{0\}$ is a direction of $A$ for each $1\leq j\leq s$. This is called the \textbf{\alert{$V$-representation}} of $A$. 
+    \end{remark}
+    We now consider \eqref{cvop} with polyhedral ordering cones $\cone{C}\subseteq\R^m$ and $\cone{D}\subseteq\R^l$. Without loss of generality, we assume that $\cone{D}=\R^m_+$ which means that $g$ is component-wise convex.
+    \newline
+    Transforming from the $H$ (resp. $V$)-representation to the $V$ (resp.$H$)-representation is called \textbf{\alert{vertex enumeration}} (resp. \textbf{\alert{facet enumeration}}).
+    
+\end{frame}
+\begin{frame}{Geometric Duality Theorem}
+For $y, y^*\in \R^m$, we define
+\[
+\begin{array}{l}
+     \varphi: \R^m\times\R^m\to\R, \varphi(y,y^*)=[y^*_1,\cdots,y^*_{m-1},1]T^{-1}y - y^*_m,  \\
+      H: \R^m\rightrightarrows \R^m, H(y^*) = \{y\in\R^m: \varphi(y,y^*)=0\},\\
+      H^*: \R^m\rightrightarrows \R^m, H(y) = \{y^*\in\R^m: \varphi(y,y^*)=0\},
+\end{array}
+\]
+The duality map $\Psi: 2^{\R^m}\to  2^{\R^m}$ is therefore defined as
+\[
+\Psi(Y^*) = \bigcap_{y^*\in Y^*} H(y^*) \cap \cone{V}.
+\]
+    
+\end{frame}
+\begin{frame}{}
+    \begin{theorem}[\cite{aHeyde2013}] $\Psi$ is an inclusion reversing one-to-one mapping between
+the set of all $\cone{K}$ -maximal exposed faces of $\cone{W}$ and the set of all weakly $\cone{C}$-minimal exposed
+faces of $\cone{V}$. The inverse map is given by
+\[
+\Psi^{−1}(Y) = \bigcap_{y\in Y} H^*(y) \cap \cone{M}.
+  \]  
+    \end{theorem}
+    \begin{definition}[solution of \eqref{dual-cvop}]
+        A point $\bar{t} \in \cone{M}$ is a \textbf{\alert{maximizer}} for \eqref{dual-cvop}, if there is no $t \in \cone{M}$ with $\Tilde{D}(t) \geq_{\cone{K}} \Tilde{D}(\Bar{t})$ and $\Tilde{D}(t)\not= \Tilde{D}(\Bar{t})$, that is, $\Tilde{D}(\Bar{t})$ is a $\cone{K}$-maximal element of $\Tilde{D}(\cone{M})$. 
+        
+        A nonempty set $\Bar{\cone{M}} \subseteq \cone{M}$ is called a \textbf{\alert{supremizer}} of \eqref{dual-cvop} if $\text{cl conv } (\Tilde{D}(\Bar{\cone{M}}) − \cone{K}) = \cone{W}$. A supremizer $\Bar{\cone{M}}$ of \eqref{dual-cvop} is called a solution to \eqref{dual-cvop} if it consists of only maximizers.
+    \end{definition}
+\end{frame}
+
+\begin{frame}{}
+    \begin{definition}
+        For the geometric dual problem \eqref{dual-cvop}, a nonempty finite set $\cone{\Bar{M}}\subseteq\cone{M}$ is called
+        a \textbf{\alert{finite $\epsilon$-supremizer}} of \eqref{dual-cvop} if
+        \[
+        \text{conv } (\Tilde{D}(\Bar{\cone{M}}) − \cone{K}) +\epsilon\{e^m\} \supseteq \cone{W}
+        \]
+        A finite $\epsilon$-supremizer $\bar{\cone{M}}$ of \eqref{dual-cvop} is called a \textbf{\alert{finite $\epsilon$-solution}} to \eqref{dual-cvop} if it consists of only maximizers.
+    \end{definition}
+    If $\Bar{\cone{M}}$ is a finite $\epsilon$-solution of \eqref{lower_img}, we have 
+    \begin{itemize}
+        \item an \textbf{\alert{outer approximation}} of the lower image \eqref{lower_img},
+        \begin{equation}\label{dual_outer_approx}
+           \text{ conv } (\Tilde{D}(\Bar{\cone{M}}) − \cone{K}) +\epsilon\{e^m\}
+        \end{equation}
+        \item an \textbf{\alert{inner approximation}} of the upper image \eqref{lower_img},
+        \begin{equation}\label{dual_inner_approx}
+            \text{ conv } (\Tilde{D}(\Bar{\cone{M}}) − \cone{K})
+        \end{equation}
+    \end{itemize}    
+\end{frame}
+
+
+\begin{frame}{}
+
+    \begin{block}{Assumption}
+        We assume the following.
+        \begin{enumerate}[(a)]
+            \item $\Omega$ is a compact subset of $\R^n$.
+            \item $\intr{\Omega}\not=\emptyset$.
+            \item $f$ is continuous.
+            \item $\cone{C}$ is polyhedral and $D=\R^l_+$.
+        \end{enumerate}
+    \end{block}
+    This assumption 
+    \begin{itemize}
+        \item  implies that problem \eqref{cvop} is bounded.
+        \item  the upper image is closed; so we can write
+    \[
+        \cone{V} = f(\Omega)+ \cone{C}.
+    \]
+    \item guaranties the existence of solutions and finite $\epsilon$-solutions to \eqref{cvop}.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Algorithm Description}
+\begin{itemize}
+    \item Start with an initial approximation $\cone{V}_o$ of $\cone{V}$ and compute a sequence 
+    \[
+    \cone{V}_0\supseteq \cone{V}_1\supseteq \cdots \supseteq \cone{V}
+    \]
+    of better approximations.
+    \item At each $k^{\text{th}}$ iteration, compute the vertices of $\cone{V}_k$. For a vertex $v$ of $\cone{V}_k$, a point $y$ on the boundary of the upper image \eqref{upper_img}, that is in minimum distance to $v$, is found. Note that $y=f(x)+c$ for some $x\in \Omega$ and $c\in \cone{C}$.
+    We add all these $X$ to $\Bar{\Omega}$.
+    \item If the minimum distance is less than of equal to error tolerance $\epsilon>0$, the algorithm proceeds to check another vertex of $\cone{V}_k$.
+    
+\end{itemize}
+    
+\end{frame}
+\begin{frame}{}
+    \begin{itemize}
+    \item if the minimum distance is greater than the error, a cutting plane, i.e. a supporting hyperplane to the upper image to \eqref{cvop} at the point $y$ and its corresponding half-space $H_k$ containing the upper image are calculated. The new approximation is obtained according
+    \[
+    \cone{V}_{k+1}=\cone{V}_k\cap H_k.
+    \]
+    The algorithm continues in the same manner, until all vertices of the current approximation are in ‘$\epsilon$-distance’ to the upper image.
+    \end{itemize}
+    Let's elaborate on what is happening at each iteration. 
+    \begin{itemize}
+        \item To compute $\cone{V}_0$, let $Z$  be the matrix, whose columns $z^1,\cdots,z^J$ are the generating vectors of the dual cone $\cone{C}^+$ and let $z^j$ be normalized in the sense that $c^Tz^j = 1$ for all $j = 1,\cdots, J$.
+        \item Denote $x^j \in X (i = 1,\cdots, J )$ the optimal solutions of \eqref{wsp-cvop} for $z^j$.
+        \item Define the half-space
+        \[
+          H_j=\left\{y\in \R^m\;|\; (z^j)^Ty\geq (z^j)^Tf(x^j) \right\},
+        \]
+        Note that $t^j=T^Tz^j \in \cone{M}$; since $c^Tz)j=1$ and $w(t^j)=z^j\in \cone{C}^+$.
+    \end{itemize}
+\end{frame}
+\begin{frame}{}
+    \begin{itemize}
+        \item We have $\Tilde{D}(t^j)=(t^j_1,\cdots,t^j_{m-1}, (z^j)^Tf(x^j))$. This implies that
+        \[
+          H_j=\left\{y\in \R^m\;|\; \varphi(y,\Tilde{D}(T^Tz^j))\geq 0 \right\},
+        \]
+        It is easy to show that for all $j$, $H_j$ contains the upper image of \eqref{cvop} (weak duality).
+        \item Therefore, we define the initial outer approximation as
+        \[
+        \cone{V}_0 = \bigcap_{j=1}^JH_j,
+        \]
+        Since $\cone{C}$ is pointed $\cone{V_0}$ has at least one vertex.
+        \item (\textbf{\alert{key step}}) we utilize the following convex program 
+        \begin{equation}\label{vsp-cvop} \tag{vs-VOP$_v$-P}
+         \begin{array}{ll}
+        \min& z\in \R\\
+        \text{subject to}& g(x)\leq 0, \;\; \\
+        & Z^T\left(f(x)-zc-v \right)\leq 0
+    	   \end{array}
+    \end{equation}
+    \end{itemize}
+\end{frame}
+\begin{frame}{}
+    \begin{itemize}
+        \item Hence, the Lagrangian $L_v : (X \times \R) \times (R^l \times \R^m ) \to \R,$ is
+        \begin{equation}\label{lagrangian_v}
+        \begin{array}{c}
+             L_v(x,z, u, w) = z + u^T g(x) + w^T f(x) − w^T cz − w^T v, 
+        \end{array}
+        \end{equation}
+yields the dual problem
+        \begin{equation}\label{vsd-cvop} \tag{vs-VOP$_v$-D}
+         \begin{array}{ll}
+        \max& \inf_{x\in X}\left\{u^Tg(x)+w^Tf(x)\right\}-w^Tv\\
+        \text{subject to}& u\geq 0, \;\; \\
+        & w^Tc=1, \\
+        & Y^Tw\geq 0
+    	   \end{array}
+    \end{equation}
+    where $Y$ is the matrix whose columns are the generating vectors of the cone $\cone{C}$.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{}
+    \begin{algorithm}[H]
+\SetAlgoLined
+
+\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+\Input{the matrix $Z$, whose columns $z^1,\cdots,z^J$ are the generating vectors
+of the dual cone $\cone{C}^+$}
+\Output{\begin{itemize}
+    \item[] $\Bar{\Omega}$  :  A finite weak $\epsilon$-solution to \eqref{cvop}; 
+    \item[] $\Bar{\cone{M}}$  :  A finite $\epsilon$-solution to \eqref{dual-cvop}; 
+    \item[] $V$ : Vertices of an outer  $\epsilon$-approximation of P;
+    \item[] $f(\Bar{\Omega})$ : Vertices of an inner  $\epsilon$-approximation of P;
+\end{itemize}}
+\BlankLine
+ initialization\;
+ Compute optimal solutions $x^j$ of \eqref{wsp-cvop} for $1\leq j\leq J$\;
+ Store an $H-$representation $\cone{V}^H$ of $\cone{V_0}$\;
+ $k=0; \Bar{\Omega} = \{x^1,\cdots,x^J\}; \cone{\Bar{M}} = \{T^Tz^1,\cdots,T^Tz^J\} $ \;
+ $D = \Tilde{D}(\cone{\Bar{M}})$, where $\Tilde{D}_m(T^Tz^j)=(z^j)^Tf(x^j), j=1,\cdots,J$\;
+ \caption{Primal approximation algorithm}
+ 
+\end{algorithm}
+\end{frame}
+
+\begin{frame}{}
+    \begin{algorithm}[H]
+    
+\SetAlgoLined
+ \SetAlgoRefName{1}
+ \Repeat{$M=\R^m$}{
+ $M=\R^m$\;
+ Compute the set $\cone{V}^V$ of vertices of $\cone{V}_k$ from its $H$-representation $\cone{V}^H$\;
+ \For{$i=1:|\cone{V}^V|$}{
+    let $v$ be the i$^{th}$ vertex of $\cone{V}_k$\;
+    Compute optimal solutions $(x^v,z^v)$ to \eqref{vsp-cvop} and $(u^v,w^v)$ to \eqref{vsd-cvop}\;
+    $\Bar{\Omega}=\Bar{\Omega}\cap \{x^v\}$;$\Bar{\cone{M}}=\Bar{\cone{M}}\cap \{T^Tw^v\}$\;
+    \eIf{$z^v>\epsilon$}{
+        $M = M\cap \{y\in\R^m\;|\; \varphi(y,\Tilde{D}(T^Tw^v))\geq 0\}$\;
+        break\;
+    }{}
+ }
+ \eIf{$M\not=\R^m$}{
+ Store in $\cone{V}^H$ an $H$-representation of $\cone{V}_{k+1}=\cone{V}_{k}\cap M$ and set $k=k+1$\;
+ }{}
+ }
+ \caption{Primal approximation algorithm ...}
+\end{algorithm}
+\end{frame}
+
+\begin{frame}{}
+        \begin{algorithm}[H]
+    
+\SetAlgoLined
+ \SetAlgoRefName{1}
+ 
+ Compute the vertices $V$ of
+ \[
+ \left\{y\in\R^m\;|\; \varphi(y,y^*)\geq 0, \text{ for all } y^*\in D=\Tilde{D}(\cone{\Bar{M}})\right\}
+ \]
+ \caption{Primal approximation algorithm ...}
+\end{algorithm}
+\end{frame}
+
+\begin{frame}{Example}
+ \begin{example}
+    Consider the following problem
+    \begin{equation}\label{example}
+        \begin{array}{ll}
+             \min_{\R^2_+}& f(x)=(x_1,x_2)^T  \\
+             \text{subject to}& \\
+             & (x_1-1)^2+(x_2-1)^2\leq 1,\\
+             & x_1,x_2\geq 0.
+        \end{array}
+    \end{equation}
+ \end{example}
+    
+\end{frame}
+
+\begin{frame}{Refernces}
+    \printbibliography
+   \nocite{*}
+\end{frame}
+\end{document}
